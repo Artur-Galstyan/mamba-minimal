@@ -40,6 +40,7 @@ loss_fn = nn.CrossEntropyLoss()
 loss_fn = loss_fn.to(device)
 optimizer = optim.Adam(mamba.parameters(), lr=learning_rate)
 start_time = time.time()
+print(len(train_dataloader))
 for i, (x, y) in tqdm(enumerate(train_dataloader)):
     x = x.to(device)
     y = y.to(device)
@@ -56,4 +57,4 @@ for i, (x, y) in tqdm(enumerate(train_dataloader)):
         break
 
 
-print(f"time to train to 300 steps = {time.time() - start_time}")
+print(f"time to train to 3000 steps = {time.time() - start_time}")
