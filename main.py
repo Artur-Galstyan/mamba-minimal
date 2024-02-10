@@ -4,6 +4,11 @@ from torch import nn as nn
 import torch.optim as optim
 import time
 from tqdm import tqdm
+import torch
+
+print(torch.cuda.is_available())
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 max_seq_len = 8
 batch_size = 64
@@ -28,23 +33,27 @@ model_args = ModelArgs(
     vocab_size=n_dims,
 )
 
-mamba = Mamba(model_args)
+mamba = Mamba(model_args).to(device)
 
 
 loss_fn = nn.CrossEntropyLoss()
+loss_fn = loss_fn.to(device)
 optimizer = optim.Adam(mamba.parameters(), lr=learning_rate)
 start_time = time.time()
 for i, (x, y) in tqdm(enumerate(train_dataloader)):
+    x = x.to(device)
+    y = y.to(device)
     outputs = mamba(x)
-    outputs = outputs.view(-1, outputs.shape[-1])  # Reshape to [64*8, 72]
-    y = y.view(-1)  # Flatten y to [64*8]
-    loss = loss_fn(outputs, y)
-    if i % 100 == 0:
-        print(f"Epoch {i} loss: {loss.item()}")
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-    if i > 300:
+    #outputs = outputs.view(-1, outputs.shape[-1])  # Reshape to [64*8, 72]
+    #y = y.view(-1)  # Flatten y to [64*8]
+    #loss = loss_fn(outputs, y)
+    #if i % 100 == 0:
+    #    print(f"Epoch {i} loss: {loss.item()}")
+    #optimizer.zero_grad()
+    #loss.backward()
+    #optimizer.step()
+    if i > 3000:
         break
 
-print(f"Training time to 300 steps: {time.time() - start_time}")
+
+print(f"time to train to 300 steps = {time.time() - start_time}")
