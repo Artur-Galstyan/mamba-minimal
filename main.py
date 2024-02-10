@@ -41,9 +41,14 @@ loss_fn = loss_fn.to(device)
 optimizer = optim.Adam(mamba.parameters(), lr=learning_rate)
 start_time = time.time()
 print(len(train_dataloader))
-for i, (x, y) in tqdm(enumerate(train_dataloader)):
+xs = []
+
+for _ in range(3000):
+    xs.append(torch.randint(0, n_dims, size=(batch_size, max_seq_len)))
+
+for i, (x) in tqdm(enumerate(xs)):
     x = x.to(device)
-    y = y.to(device)
+    
     outputs = mamba(x)
     #outputs = outputs.view(-1, outputs.shape[-1])  # Reshape to [64*8, 72]
     #y = y.view(-1)  # Flatten y to [64*8]
